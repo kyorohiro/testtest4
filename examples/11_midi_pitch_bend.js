@@ -1,0 +1,19 @@
+// In MIDI connections, select Tetorica YM2612 (it enables automatically)
+// (or Tetorica Sega PSG) as the MIDI output. Then Run this file.
+// Internal bend range is +/-2 semitones. A compatible external synth also works.
+// Program Change is transmitted, but internal preset-number mapping is pending;
+// the internal YM2612 keeps the patch selected for this channel in its tab.
+setBpm(120);
+await programChange(30, { channel: CH1 });
+await noteOn("C4", { channel: CH1, velocity: 100 });
+try {
+  for (let i = 0; i <= 20; i++) {
+    await pitchBend(i / 20, { channel: CH1 });
+    await beat(0.025);
+  }
+} finally {
+  await noteOff("C4", { channel: CH1 });
+  await pitchBend(0, { channel: CH1 });
+}
+// External synths may retain bend after Stop; send pitchBend(0) to reset it.
+// Internal Stop/Panic resets controllers while preserving edited FM patches.
